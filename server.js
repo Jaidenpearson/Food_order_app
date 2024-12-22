@@ -9,6 +9,7 @@ const path = require('path');
 const PORT = process.env.PORT || 8080;
 const app = express();
 
+//allows express to pull static files from the public directory
 app.use('/public', express.static(__dirname + "/public"));
 
 app.set('view engine', 'ejs');
