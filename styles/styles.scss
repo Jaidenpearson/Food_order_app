@@ -10944,13 +10944,36 @@ p.lead {
   font-size: 3rem;
 }
 
+.dish-image-container > img.dish-image {
+  max-width: 200px;
+  height: auto;
+}
+
+.menu-item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  gap: 1rem;
+}
+
+.sub-nav {
+  display: none;
+}
+
+.fa-angle-up {
+  display: none;
+}
+
 section.resume-section {
   display: flex;
   align-items: center;
   padding-left: 1rem;
   padding-right: 1rem;
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   max-width: 75rem;
 }
 section.resume-section .resume-section-content {
@@ -10961,12 +10984,16 @@ section.resume-section .resume-section-content {
   section.resume-section {
     min-height: 100vh;
   }
+
+  .menu-item-container {
+    flex-direction: row;
+  }
 }
 @media (min-width: 992px) {
   section.resume-section {
     padding-left: 3rem;
     padding-right: 3rem;
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 }
