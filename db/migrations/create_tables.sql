@@ -17,7 +17,8 @@ CREATE TABLE Dishes (
     Price DECIMAL(10, 2) NOT NULL,
     Description TEXT,
     Courses VARCHAR(255),
-    Images TEXT
+    Time_to_cook TINYINT
+    Images IMAGE
 );
 
 CREATE TABLE Orders (
