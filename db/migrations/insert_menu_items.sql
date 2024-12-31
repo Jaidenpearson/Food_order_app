@@ -1,7 +1,6 @@
--- migrations/insert_menu_items.sql
 INSERT INTO Dishes (Name, Price, Description, Courses, Images) VALUES
 -- Specials
-('Chef\'s Special Sushi Platter', 29.99, 'A selection of premium sushi chosen by the chef.', 'Main Course', 'special_platter.jpg'),
+('Chef''s Special Sushi Platter', 29.99, 'A selection of premium sushi chosen by the chef.', 'Main Course', 'special_platter.jpg'),
 ('Premium Sashimi Combo', 35.99, 'An assortment of fresh sashimi.', 'Main Course', 'sashimi_combo.jpg'),
 
 -- Salads
@@ -27,3 +26,4 @@ INSERT INTO Dishes (Name, Price, Description, Courses, Images) VALUES
 -- Sides
 ('Rice', 1.99, 'Steamed white rice.', 'Side', 'rice.jpg'),
 ('Miso Soup', 2.99, 'Traditional Japanese soup with tofu and seaweed.', 'Appetizer', 'miso_soup.jpg');
+
