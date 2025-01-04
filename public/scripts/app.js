@@ -20,17 +20,21 @@ const createMenuItem = function(dish) {
   return $dish;
 };
 
-const createMenuData = function(dishes) {
+const createCourseHTML = function(course) {
   let $course = $(`
-    <section class="menu-categories resume-section" id="specials">
-      <h2 class="mb-5">${dishes[0].courses}</h2>
+    <section class="menu-categories resume-section" id="${course}">
+      <h2 class="mb-5">${course}</h2>
     </section>
   `);
-  dishes.forEach(dish => {
-    $course.append(createMenuItem(dish));
-  });
   return $course;
 };
+
+const createCourses = function(courses) {
+  for (const course of courses) {
+    const $course = createCourseHTML(course);
+    $('#menu-container').append($course);
+  }
+}
 
 $.ajax({
   url: '/api/dishes',
