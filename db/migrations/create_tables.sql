@@ -1,4 +1,11 @@
+DROP TABLE IF EXISTS Combined_notifications;
+DROP TABLE IF EXISTS Ordered_dishes;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Dishes;
+DROP TABLE IF EXISTS Client;
+DROP TABLE IF EXISTS Restaurant;
 -- create_tables.sql
+
 CREATE TABLE Restaurant (
     UniqueID SERIAL PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
@@ -17,8 +24,8 @@ CREATE TABLE Dishes (
     Price DECIMAL(10, 2) NOT NULL,
     Description TEXT,
     Courses VARCHAR(255),
-    Time_to_cook TINYINT
-    Images IMAGE
+    Time_to_cook SMALLINT, -- Changed TINYINT to SMALLINT
+    Images TEXT
 );
 
 CREATE TABLE Orders (
