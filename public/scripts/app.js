@@ -18,6 +18,24 @@ const createCourseHTML = function(course) {
 
 const createCourses = function(courses) {
   console.log('Creating courses:', courses); // Debugging line
+
+  const courseOrder = [
+    'specials',
+    'salads',
+    'appetizers',
+    'soups',
+    'mains',
+    'desserts',
+    'drinks',
+    'sides',
+    'gluten free',
+    'vegetarian'
+  ];
+
+  courses.sort((a, b) => {
+    return courseOrder.indexOf(a.courses) - courseOrder.indexOf(b.courses);
+  });
+
   courses.forEach(course => {
     const $course = createCourseHTML(course);
     $('#menu-container').append($course);

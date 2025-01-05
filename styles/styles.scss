@@ -10959,6 +10959,14 @@ p.lead {
   gap: 1rem;
 }
 
+.menu-categories {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
 .sub-nav {
   display: none;
 }
@@ -10979,6 +10987,7 @@ section.resume-section {
 section.resume-section .resume-section-content {
   width: 100%;
 }
+
 
 .item-sub-container {
   display: flex;
