@@ -8,12 +8,13 @@ const getDishes = () => {
 };
 
 const getCourse = () => {
-  return db.query(`SELECT dishes.courses
-    FROM dishes
-    GROUP BY courses;`)
-    .then(data => {
-      return data.rows;
+  return db.query('SELECT DISTINCT Courses FROM Dishes')
+    .then(res => res.rows)
+    .catch(err => {
+      console.error('Error executing query', err.stack);
+      throw err;
     });
-}
+};
+
 
 module.exports = { getDishes, getCourse };
