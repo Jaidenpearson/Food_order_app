@@ -4,7 +4,45 @@ $('#menu-toggle').on('click', function() {
   $('.fa-angle-down').toggle()
 });
 
-const createMenuItem = function(dish) {
+
+const createCourseHTML = function(course) {
+  let $course = $(`
+    <section class="menu-categories resume-section" ">
+      <h2 class="mb-5">${course.courses}</h2>
+      <div id="${course.courses}" class="menu-items">
+      </div>
+    </section>
+  `);
+  return $course;
+};
+
+const createCourses = function(courses) {
+  console.log('Creating courses:', courses); // Debugging line
+
+  const courseOrder = [
+    'specials',
+    'salads',
+    'appetizers',
+    'soups',
+    'mains',
+    'desserts',
+    'drinks',
+    'sides',
+    'gluten free',
+    'vegetarian'
+  ];
+
+  courses.sort((a, b) => {
+    return courseOrder.indexOf(a.courses) - courseOrder.indexOf(b.courses);
+  });
+
+  courses.forEach(course => {
+    const $course = createCourseHTML(course);
+    $('#menu-container').append($course);
+  });
+};
+
+const createDishHTML = function(dish) {
   let $dish = $(`
     <div class="menu-item-container">
       <div>
@@ -20,31 +58,36 @@ const createMenuItem = function(dish) {
   return $dish;
 };
 
-const createCourseHTML = function(course) {
-  let $course = $(`
-    <section class="menu-categories resume-section" id="${course}">
-      <h2 class="mb-5">${course}</h2>
-    </section>
-  `);
-  return $course;
-};
-
-const createCourses = function(courses) {
-  for (const course of courses) {
-    const $course = createCourseHTML(course);
-    $('#menu-container').append($course);
-  }
+const createDishes = function(dishes) {
+  dishes.forEach(dish => {
+    const $dish = createDishHTML(dish);
+    $(`#${dish.courses}`).append($dish);
+  });
 }
 
 $.ajax({
-  url: '/api/dishes',
+  url: '/api/courses',
   method: 'GET',
-  success: function(dishes) {
-    console.log('Dishes fetched:', dishes); // Debugging line
-    const $menu = createMenuData(dishes);
-    $('#menu-container').append($menu);
+  success: function(courses) {
+    createCourses(courses);
+
+    $.ajax({
+      url: '/api/dishes',
+      method: 'GET',
+      success: function(dishes) {
+        console.log('Dishes fetched:', dishes); // Debugging line
+        createDishes(dishes);
+      },
+      error: function(err) {
+        console.error('Error fetching dishes:', err);
+      }
+    })
   },
   error: function(err) {
     console.error('Error fetching dishes:', err);
   }
+
 });
+
+
+
