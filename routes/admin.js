@@ -39,23 +39,30 @@ const pool = new Pool({
 // Route to render the Admin Dashboard (HTML)
 router.get('/dashboard', async (req, res) => {
   try {
-      const query = `
-          SELECT
-              Orders.UniqueID AS order_id,
-              Dishes.Name AS menu_item_name,
-              Ordered_dishes.Quantity AS quantity,
-              Dishes.Price AS price,
-              (Ordered_dishes.Quantity * Dishes.Price) AS total_price,
-              Orders.Status AS status
-          FROM
-              Orders
-          JOIN
-              Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
-          JOIN
-              Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
-          ORDER BY
-              Orders.Created_at DESC;
-      `;
+    const query = `
+    SELECT
+        Orders.UniqueID AS order_id,
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'menu_item_name', Dishes.Name,
+                'quantity', Ordered_dishes.Quantity,
+                'price', Dishes.Price,
+                'total_price', (Ordered_dishes.Quantity * Dishes.Price)
+            )
+        ) AS dishes,
+        SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
+        Orders.Status AS status
+    FROM
+        Orders
+    LEFT JOIN
+        Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
+    LEFT JOIN
+        Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+    GROUP BY
+        Orders.UniqueID
+    ORDER BY
+        Orders.Created_at DESC;
+`;
       const result = await pool.query(query);
       const orders = result.rows;
 
@@ -66,5 +73,29 @@ router.get('/dashboard', async (req, res) => {
       res.status(500).send('Error fetching orders.');
   }
 });
+
+// Route to handle Accept/Decline actions for orders
+router.post('/orders/:orderId/:action', async (req, res) => {
+  const { orderId, action } = req.params;
+  const validActions = ['accept', 'decline'];
+
+  // Ensure the action is valid
+  if (!validActions.includes(action.toLowerCase())) {
+      return res.status(400).send('Invalid action');
+  }
+
+  // Map the action to the appropriate status
+  const status = action === 'accept' ? 'Accepted' : 'Declined';
+
+  try {
+      // Update the order's status
+      await pool.query('UPDATE Orders SET Status = $1 WHERE UniqueID = $2', [status, orderId]);
+      res.redirect('/admin/dashboard'); // Redirect back to the dashboard after the update
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error updating order status.');
+  }
+});
+
 
 module.exports = router;

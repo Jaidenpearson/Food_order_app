@@ -27,8 +27,6 @@
       <tr>
         <th>Order ID</th>
         <th>Menu Item Name</th>
-        <th>Quantity</th>
-        <th>Price</th>
         <th>Total Price</th>
         <th>Status</th>
         <th>Actions</th>
@@ -38,23 +36,32 @@
       <% orders.forEach(order => { %>
         <tr>
           <td><%= order.order_id %></td>
-          <td><%= order.menu_item_name || 'N/A' %></td>
-          <td><%= order.quantity || 'N/A' %></td>
-          <td><%= order.price ? `$${parseFloat(order.price).toFixed(2)}` : 'N/A' %></td>
-          <td><%= order.total_price ? `$${parseFloat(order.total_price).toFixed(2)}` : 'N/A' %></td>
+          <td>
+            <% if (order.dishes.length > 0) { %>
+              <% order.dishes.forEach(dish => { %>
+                <p><%= dish.menu_item_name %> (x<%= dish.quantity %>)</p>
+              <% }) %>
+            <% } else { %>
+              <p>N/A</p>
+            <% } %>
+          </td>
+          <td>$<%= order.total_price ? parseFloat(order.total_price).toFixed(2) : '0.00' %></td>
           <td><%= order.status %></td>
           <td>
-            <form action="/admin/orders/<%= order.order_id %>/accept" method="POST" style="display:inline;">
-              <button type="submit">Accept</button>
-            </form>
-            <form action="/admin/orders/<%= order.order_id %>/decline" method="POST" style="display:inline;">
-              <button type="submit">Decline</button>
-            </form>
+            <% if (order.status === 'Pending') { %>
+              <form action="/admin/orders/<%= order.order_id %>/accept" method="POST" style="display:inline;">
+                <button type="submit">Accept</button>
+              </form>
+              <form action="/admin/orders/<%= order.order_id %>/decline" method="POST" style="display:inline;">
+                <button type="submit">Decline</button>
+              </form>
+            <% } else { %>
+              <p><%= order.status %></p>
+            <% } %>
           </td>
         </tr>
       <% }); %>
     </tbody>
-
   </table>
 </body>
 </html>
