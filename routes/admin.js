@@ -11,31 +11,60 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-// API endpoint to fetch all orders
-router.get('/orders', async (req, res) => {
-    try {
-        const query = `
-            SELECT
-                Orders.UniqueID AS order_id,
-                Orders.Status AS status,
-                Orders.Pickup_time AS pickup_time,
-                Orders.Created_at AS created_at,
-                Client.Name AS client_name,
-                Client.Phone_Number AS client_phone
-            FROM
-                Orders
-            JOIN
-                Client ON Orders.Client_id = Client.UniqueID
-            ORDER BY
-                Orders.Created_at DESC;
-        `;
-        const result = await pool.query(query);
-        res.json(result.rows); // Return the orders as JSON
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch orders' });
-    }
+// API endpoint to fetch all orders (returns JSON)
+// router.get('/orders', async (req, res) => {
+//     try {
+//         const query = `
+//             SELECT
+//                 Orders.UniqueID AS order_id,
+//                 Orders.Pickup_time AS pickup_time,
+//                 Orders.Created_at AS created_at,
+//                 Client.Name AS client_name,
+//                 Client.Phone_Number AS client_phone
+//             FROM
+//                 Orders
+//             JOIN
+//                 Client ON Orders.Client_id = Client.UniqueID
+//             ORDER BY
+//                 Orders.Created_at DESC;
+//         `;
+//         const result = await pool.query(query);
+//         res.json(result.rows); // Return the orders as JSON
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: 'Failed to fetch orders' });
+//     }
+// });
+
+// Route to render the Admin Dashboard (HTML)
+router.get('/dashboard', async (req, res) => {
+  try {
+      const query = `
+          SELECT
+              Orders.UniqueID AS order_id,
+              Dishes.Name AS menu_item_name,
+              Ordered_dishes.Quantity AS quantity,
+              Dishes.Price AS price,
+              (Ordered_dishes.Quantity * Dishes.Price) AS total_price,
+              Orders.Status AS status
+          FROM
+              Orders
+          JOIN
+              Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
+          JOIN
+              Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+          ORDER BY
+              Orders.Created_at DESC;
+      `;
+      const result = await pool.query(query);
+      const orders = result.rows;
+
+      console.log(orders); // Log the data being sent to the template
+      res.render('admin_dashboard', { orders });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error fetching orders.');
+  }
 });
 
 module.exports = router;
-

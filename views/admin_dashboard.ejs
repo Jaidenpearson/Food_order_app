@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Menu Item Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(order => { %>
+        <tr>
+          <td><%= order.order_id %></td>
+          <td><%= order.menu_item_name || 'N/A' %></td>
+          <td><%= order.quantity || 'N/A' %></td>
+          <td><%= order.price ? `$${parseFloat(order.price).toFixed(2)}` : 'N/A' %></td>
+          <td><%= order.total_price ? `$${parseFloat(order.total_price).toFixed(2)}` : 'N/A' %></td>
+          <td><%= order.status %></td>
+          <td>
+            <form action="/admin/orders/<%= order.order_id %>/accept" method="POST" style="display:inline;">
+              <button type="submit">Accept</button>
+            </form>
+            <form action="/admin/orders/<%= order.order_id %>/decline" method="POST" style="display:inline;">
+              <button type="submit">Decline</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+
+  </table>
+</body>
+</html>
