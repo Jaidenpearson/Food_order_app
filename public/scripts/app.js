@@ -55,7 +55,7 @@ const createDishHTML = function(dish) {
         <h3 class="mb-0">${dish.name}</h3>
         <div class="item-sub-container">
           <p>${dish.description}</p>
-          <p>${dish.price}</p>
+          <p>$${dish.price}</p>
           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">
             Add to Cart
           </button>
@@ -75,7 +75,7 @@ const createDishHTML = function(dish) {
             <form method="POST" action="/api/cart">
               <img class="dish-image" src="${dish.images}" alt="">
               <p>${dish.description}</p>
-              <p>${dish.price}</p>
+              <p>$${dish.price}</p>
               <div class="modal-quantity">
                 <label for="quantity-${dish.id}">Quantity:</label>
                 <input type="number" id="quantity-${dish.id}" name="quantity" min="1" max="10">
