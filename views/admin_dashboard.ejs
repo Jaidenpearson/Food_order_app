@@ -30,6 +30,7 @@
         <th>Total Price</th>
         <th>Status</th>
         <th>Actions</th>
+        <th>SMS</th>
       </tr>
     </thead>
     <tbody>
@@ -57,6 +58,21 @@
               </form>
             <% } else { %>
               <p><%= order.status %></p>
+            <% } %>
+          </td>
+          <td>
+            <% if (order.status === 'Accepted') { %>
+              <% if (order.sms_sent) { %>
+                <form action="/admin/orders/<%= order.order_id %>/send-sms" method="POST" style="display:inline;">
+                  <button type="submit">Re-Send SMS</button>
+                </form>
+              <% } else { %>
+                <form action="/admin/orders/<%= order.order_id %>/send-sms" method="POST" style="display:inline;">
+                  <button type="submit" style="background-color: gray;">Send SMS</button>
+                </form>
+              <% } %>
+            <% } else { %>
+              <p>N/A</p>
             <% } %>
           </td>
         </tr>

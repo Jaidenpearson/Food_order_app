@@ -77,25 +77,74 @@ router.get('/dashboard', async (req, res) => {
 // Route to handle Accept/Decline actions for orders
 router.post('/orders/:orderId/:action', async (req, res) => {
   const { orderId, action } = req.params;
-  const validActions = ['accept', 'decline'];
+  const validActions = ['accept', 'decline', 'send-sms'];
 
   // Ensure the action is valid
   if (!validActions.includes(action.toLowerCase())) {
-      return res.status(400).send('Invalid action');
+    return res.status(400).send('Invalid action');
   }
-
-  // Map the action to the appropriate status
-  const status = action === 'accept' ? 'Accepted' : 'Declined';
 
   try {
+    if (action === 'send-sms') {
+      // Fetch the order details (optional, for logging or future use)
+      const query = `
+        SELECT
+          Orders.UniqueID AS order_id,
+          JSON_AGG(
+            JSON_BUILD_OBJECT(
+              'menu_item_name', Dishes.Name,
+              'quantity', Ordered_dishes.Quantity,
+              'price', Dishes.Price,
+              'total_price', (Ordered_dishes.Quantity * Dishes.Price)
+            )
+          ) AS dishes,
+          SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
+          Orders.Status AS status,
+          Orders.sms_sent
+        FROM
+          Orders
+        LEFT JOIN
+          Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
+        LEFT JOIN
+          Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+        WHERE
+          Orders.UniqueID = $1
+        GROUP BY
+          Orders.UniqueID;
+      `;
+
+      const result = await pool.query(query, [orderId]);
+      const order = result.rows[0]; // Get the first (and only) result
+
+      if (!order) {
+        return res.status(404).send('Order not found.');
+      }
+
+      if (order.sms_sent) {
+        console.log(`SMS already sent for order ID: ${orderId}`);
+      } else {
+        console.log(`Simulating SMS for order ID: ${orderId}`);
+        console.log(JSON.stringify(order, null, 2)); // Pretty print the order details
+
+        // Update the `sms_sent` column to TRUE
+        await pool.query('UPDATE Orders SET sms_sent = TRUE WHERE UniqueID = $1', [orderId]);
+      }
+
+      res.redirect('/admin/dashboard'); // Redirect back to the dashboard
+    } else {
+      // Map the action to the appropriate status
+      const status = action === 'accept' ? 'Accepted' : 'Declined';
+
       // Update the order's status
       await pool.query('UPDATE Orders SET Status = $1 WHERE UniqueID = $2', [status, orderId]);
-      res.redirect('/admin/dashboard'); // Redirect back to the dashboard after the update
+      res.redirect('/admin/dashboard'); // Redirect back to the dashboard
+    }
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Error updating order status.');
+    console.error(err);
+    res.status(500).send('Error processing action.');
   }
 });
+
 
 
 module.exports = router;
