@@ -20,7 +20,6 @@ const createCourseHTML = function(course) {
 
 //Sorts courses so they render inproper order
 const createCourses = function(courses) {
-  console.log('Creating courses:', courses); // Debugging line
 
   const courseOrder = [
     'specials',
@@ -48,7 +47,6 @@ const createCourses = function(courses) {
 //HTML for each dish and dish modal
 const createDishHTML = function(dish) {
   const modalId = `modal-${dish.uniqueid}`;
-  console.log('Creating dish:', modalId); // Debugging line
   let $dish = $(`
     <div class="menu-item-container">
       <div>
@@ -72,15 +70,18 @@ const createDishHTML = function(dish) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="/api/cart">
+            <form id="add-to-cart-form" method="POST" action="/api/cart">
               <img class="dish-image" src="${dish.images}" alt="">
               <p>${dish.description}</p>
               <p>$${dish.price}</p>
+                <input type="hidden" name="dish-id" value="${dish.uniqueid}">
+                <input type="hidden" name="dish-name" value="${dish.name}">
+                <input type="hidden" name="dish-price" value="${dish.price}">
               <div class="modal-quantity">
                 <label for="quantity-${dish.id}">Quantity:</label>
-                <input type="number" id="quantity-${dish.id}" name="quantity" min="1" max="10">
+                <input type="number" id="quantity-${dish.id}" name="quantity" min="1" max="10" value="1">
               </div>
-              <textarea class="form-control" id="exampleFormControlTextarea1-${dish.id}" rows="3" placeholder="Special Instructions"></textarea>
+              <textarea class="form-control" id="textArea-${dish.id}" rows="3" name="special-requests" placeholder="Special Instructions"></textarea>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button id="add-to-cart-${dish.id}" type="submit" class="btn btn-primary">Add to cart</button>
@@ -127,9 +128,14 @@ $.ajax({
 
 });
 
+$(document).on('submit', '#add-to-cart-form', function(event) {
+  event.preventDefault();
+  $.post('/api/cart', $(this).serialize(), function(data) {
+  })
+});
+
 });
 
 // $(document).on('click', '.btn-outline-primary', function() {
 //   $modal.appendTo('body').modal('show');
 // });
-

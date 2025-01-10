@@ -42,6 +42,7 @@ CREATE TABLE Ordered_dishes (
     UniqueID SERIAL PRIMARY KEY,
     Order_id INT NOT NULL,
     Dish_id INT NOT NULL,
+    Special_requests TEXT,
     Quantity INT NOT NULL CHECK (Quantity > 0),
     CONSTRAINT fk_order FOREIGN KEY (Order_id) REFERENCES Orders(UniqueID),
     CONSTRAINT fk_dish FOREIGN KEY (Dish_id) REFERENCES Dishes(UniqueID)

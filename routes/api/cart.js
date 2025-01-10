@@ -1,10 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
+const cart = [];
+
+// router.post('/', (req, res) => {
+//   cart.push(req.body);
+//   res.send(cart);
+// });
+
 router.post('/', (req, res) => {
-  console.log('POST /api/cart called');
-  console.log('req.body:', req.body);
-  res.json(req.body);
+  cart.push(req.body);
+  req.session.cart = cart;
+  res.json(req.session.cart);
 });
 
 
