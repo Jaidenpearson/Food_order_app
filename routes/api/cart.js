@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const app = express();
-const cookieSession = require('cookie-session');
 
+const cart = [];
+
+// router.post('/', (req, res) => {
+//   cart.push(req.body);
+//   res.send(cart);
+// });
 
 router.post('/', (req, res) => {
-  app.use(cookieSession({
-    name: `session`,
-    keys: ['key1', 'key2'],
-  }))
-  console.log('POST /api/cart called');;
-  res.json(req.body);
+  cart.push(req.body);
+  req.session.cart = cart;
+  res.json(req.session.cart);
 });
 
 
