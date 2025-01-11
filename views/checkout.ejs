@@ -56,7 +56,7 @@
                         <tr>
                           <td><%= dish.name %></td>
                           <td><%= dish.quantity %></td>
-                          <td>$<%= dish.price %></td>
+                          <td>$<%= (dish.quantity * dish.price).toFixed(2) %></td>
                       </tr>
                   <% }); %>
                   <tr>
