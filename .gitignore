@@ -6,3 +6,5 @@ public/styles
 .env.example
 
 .codegpt
+checkout.html
+views/checkout.ejs
