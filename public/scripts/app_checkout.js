@@ -1,4 +1,39 @@
 $(document).ready(function () {
+
+  $('#ordered-dish-container').empty();
+// Populate order summary table
+  function createOrderHTML(order) {
+    const $row = $(`
+      <tr>
+        <td>${order["dish-name"]}</td>
+        <td>${order.quantity}</td>
+        <td>$${(order["dish-price"] * order.quantity).toFixed(2)}</td>
+        <td>${order["special-requests"]}</td>
+      </tr>
+    `);
+    return $('#ordered-dish-container').append($row);
+  };
+
+  const createOrder = function(dishes) {
+    dishes.forEach(dish => {
+      const $orderedDish = createOrderHTML(dish);
+      $('#ordered-dish-container').append($orderedDish);
+    });
+  }
+
+  const totalAmount = function(dishes) {
+    orderTotal = dishes.reduce((total, dish) => {
+      return total + (dish["dish-price"] * dish.quantity);
+    }, 0);
+    const $totalRow = $(`
+      <tr>
+        <td colspan="2"><strong>Total</strong></td>
+        <td><strong>$${orderTotal}</strong></td>
+      </tr>
+    `);
+    return $('#ordered-dish-container').append($totalRow);
+  }
+
 // Fetch cart data and render it on the checkout page
   const fetchCartData = () => {
     $.ajax({
@@ -6,34 +41,10 @@ $(document).ready(function () {
       method: 'GET',
       success: function (cart) {
         console.log(cart)
-        const { dishes, totalAmount } = cart;
-
-        // Populate order summary table
-        const $orderSummary = $('table.table-striped tbody');
-        $orderSummary.empty();
-
-        Object.entries(cart).forEach(dish => {
-          const $row = $(`
-            <tr>
-              <td>${dish.dish-name}</td>
-              <td>${dish.quantity}</td>
-              <td>${dish.special-requests}</td>
-              <td>$${(dish.dish-price * dish.quantity).toFixed(2)}</td>
-            </tr>
-          `);
-          $orderSummary.append($row);
-        });
-
-        // Add total amount
-        const $totalRow = $(`
-          <tr>
-            <td colspan="2"><strong>Total</strong></td>
-            <td><strong>$${totalAmount.toFixed(2)}</strong></td>
-          </tr>
-        `);
-        $orderSummary.append($totalRow);
+        createOrder(cart);
+        totalAmount(cart);
       },
-      error: function (err) {
+        error: function (err) {
         console.error('Error fetching cart data:', err);
       }
     });

@@ -64,20 +64,8 @@
                             <th>Quantity</th>
                             <th>Price</th>
                         </tr>
+                        <tbody id="ordered-dish-container"></tbody>
                     </thead>
-                    <tbody>
-                      <% dishes.forEach(dish => { %>
-                        <tr>
-                          <td><%= dish.name %></td>
-                          <td><%= dish.quantity %></td>
-                          <td>$<%= (dish.quantity * dish.price).toFixed(2) %></td>
-                      </tr>
-                  <% }); %>
-                  <tr>
-                            <td colspan="2"><strong>Total</strong></td>
-                            <td><strong>$<%= totalAmount %></strong></td>
-                        </tr>
-                    </tbody>
                 </table>
             </div>
             <div class="col-md-4">
