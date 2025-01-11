@@ -23,7 +23,8 @@
     "morgan": "^1.9.1",
     "pg": "^8.5.0",
     "sass": "^1.35.1",
-    "startbootstrap-resume": "^7.0.6"
+    "startbootstrap-resume": "^7.0.6",
+    "twilio": "^5.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.10"
