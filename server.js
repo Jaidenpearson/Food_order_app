@@ -34,6 +34,7 @@ app.use(cookieSession({
 
 const usersRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin')
+const checkoutRoutes = require('./routes/checkout');
 const dishesRoutes = require('./routes/api/dishes');
 const coursesRoutes = require('./routes/api/courses');
 const cartRoutes = require('./routes/api/cart');
@@ -45,6 +46,7 @@ const smsRoutes = require('./routes/sms');
 
 app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes)
+app.use('/checkout', checkoutRoutes);
 app.use('/api/dishes', dishesRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/cart', cartRoutes);
