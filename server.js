@@ -37,6 +37,7 @@ const adminRoutes = require('./routes/admin')
 const dishesRoutes = require('./routes/api/dishes');
 const coursesRoutes = require('./routes/api/courses');
 const cartRoutes = require('./routes/api/cart');
+const smsRoutes = require('./routes/sms');
 
 // Mount all resource routes
 // Note: Feel free to replace the example routes below with your own
@@ -47,6 +48,7 @@ app.use('/admin', adminRoutes)
 app.use('/api/dishes', dishesRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/sms', smsRoutes);
 // Note: mount other resources here, using the same pattern above
 
 // Home page

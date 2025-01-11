@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
-
+const twilio = require('twilio');
 // Configure the PostgreSQL connection
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -10,6 +10,7 @@ const pool = new Pool({
     password: process.env.DB_PASS,
     port: process.env.DB_PORT,
 });
+
 
 // API endpoint to fetch all orders (returns JSON)
 // router.get('/orders', async (req, res) => {
@@ -144,7 +145,5 @@ router.post('/orders/:orderId/:action', async (req, res) => {
     res.status(500).send('Error processing action.');
   }
 });
-
-
 
 module.exports = router;
