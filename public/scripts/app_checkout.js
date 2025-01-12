@@ -8,7 +8,7 @@ $(document).ready(function () {
         <td>${order["dish-name"]}</td>
         <td>${order.quantity}</td>
         <td>$${(order["dish-price"] * order.quantity).toFixed(2)}</td>
-        <td>${order["special-requests"]}</td>
+        <td><button class="btn btn-danger remove-item" data-id="${order["dish-id"]}">Remove</button></td>
       </tr>
     `);
     return $('#ordered-dish-container').append($row);
@@ -40,7 +40,6 @@ $(document).ready(function () {
       url: '/api/cart',
       method: 'GET',
       success: function (cart) {
-        console.log(cart)
         createOrder(cart);
         totalAmount(cart);
       },
@@ -78,6 +77,21 @@ $(document).ready(function () {
       error: function (err) {
         console.error('Error placing order:', err);
         alert('An error occurred while placing your order. Please try again.');
+      }
+    });
+  });
+
+  $(document).on('click', '.remove-item', function () {
+    const id = $(this).data('id');
+    $.ajax({
+      url: `/api/cart/${id}`,
+      method: 'DELETE',
+      success: function (response) {
+        $('#ordered-dish-container').empty(); // Clear the order summary table
+        fetchCartData(); // Refresh the cart data
+      },
+      error: function (err) {
+        console.error('Error removing item:', err);
       }
     });
   });
