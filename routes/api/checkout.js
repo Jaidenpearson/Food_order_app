@@ -1,71 +1,60 @@
-$(document).ready(function () {
-  // Fetch cart data and render it on the checkout page
-  const fetchCartData = () => {
-    $.ajax({
-      url: '/api/cart',
-      method: 'GET',
-      success: function (data) {
-        const { dishes, totalAmount } = data;
+const express = require('express');
+const router = express.Router();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Use your Stripe Secret Key
+const db = require('../../db/connection'); // Import database connection
 
-        // Populate order summary table
-        const $orderSummary = $('table.table-striped tbody');
-        $orderSummary.empty();
-
-        dishes.forEach(dish => {
-          const $row = $(`
-            <tr>
-              <td>${dish.name}</td>
-              <td>${dish.quantity}</td>
-              <td>$${(dish.price * dish.quantity).toFixed(2)}</td>
-            </tr>
-          `);
-          $orderSummary.append($row);
-        });
-
-        // Add total amount
-        const $totalRow = $(`
-          <tr>
-            <td colspan="2"><strong>Total</strong></td>
-            <td><strong>$${totalAmount.toFixed(2)}</strong></td>
-          </tr>
-        `);
-        $orderSummary.append($totalRow);
-      },
-      error: function (err) {
-        console.error('Error fetching cart data:', err);
-      }
-    });
-  };
-
-  // Fetch cart data on page load
-  fetchCartData();
-
-  // Handle order submission
-  $('form').on('submit', function (event) {
-    event.preventDefault();
-
-    const orderDetails = {
-      fullName: $('#fullName').val(),
-      email: $('#email').val(),
-      phone: $('#phone').val(),
-      paymentMethod: $('#payment').val(),
-    };
-
-    // Send order data to the server
-    $.ajax({
-      url: '/api/checkout',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(orderDetails),
-      success: function (response) {
-        alert('Order placed successfully!');
-        // Redirect to a confirmation page or clear the cart
-        window.location.href = '/order-confirmation';
-      },
-      error: function (err) {
-        console.error('Error placing order:', err);
-        alert('An error occurred while placing your order. Please try again.');
-      }
-    });
-  });
+// Route to render the checkout page
+router.get('/', (req, res) => {
+  res.render('checkout');
 });
+
+// Route to create a Payment Intent and save order details
+router.post('/create-payment-intent', async (req, res) => {
+  try {
+    console.log('Received request:', req.body); // Log request body
+
+    const { amount, phone } = req.body;
+    if (!amount || !phone) {
+      console.error('Missing required fields: amount or phone');
+      return res.status(400).json({ error: 'Amount and phone number are required' });
+    }
+
+    // Debug log for Payment Intent creation
+    console.log('Creating Payment Intent for amount:', amount);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100),
+      currency: 'usd',
+      payment_method_types: ['card'],
+    });
+
+    console.log('Payment Intent created successfully:', paymentIntent);
+
+    // Debug log for database insertion
+    console.log('Inserting order into database with phone:', phone);
+
+    const result = await db.query(
+      `
+      INSERT INTO Orders (Client_id, Status, Pickup_time, Created_at, Updated_at, Phone_Number)
+      VALUES ($1, 'Pending', NOW() + INTERVAL '30 minutes', NOW(), NOW(), $2) RETURNING UniqueID;
+      `,
+      [1, phone] // Replace `1` with actual Client ID logic
+    );
+
+    console.log('Order inserted successfully:', result.rows[0]);
+
+    const orderId = result.rows[0].uniqueid;
+
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      orderId,
+    });
+  } catch (error) {
+    console.error('Error creating Payment Intent:', error);
+    res.status(500).json({ error: 'Error creating Payment Intent' });
+  }
+});
+
+
+module.exports = router;
+

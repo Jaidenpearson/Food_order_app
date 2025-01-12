@@ -52,7 +52,8 @@ router.get('/dashboard', async (req, res) => {
             )
         ) AS dishes,
         SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
-        Orders.Status AS status
+        Orders.Status AS status,
+        Orders.Phone_Number AS phone -- Include phone number
     FROM
         Orders
     LEFT JOIN
@@ -63,17 +64,18 @@ router.get('/dashboard', async (req, res) => {
         Orders.UniqueID
     ORDER BY
         Orders.Created_at DESC;
-`;
-      const result = await pool.query(query);
-      const orders = result.rows;
+    `;
+    const result = await pool.query(query);
+    const orders = result.rows;
 
-      console.log(orders); // Log the data being sent to the template
-      res.render('admin_dashboard', { orders });
+    console.log(orders); // Log the data being sent to the template
+    res.render('admin_dashboard', { orders });
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Error fetching orders.');
+    console.error(err);
+    res.status(500).send('Error fetching orders.');
   }
 });
+
 
 // Route to handle Accept/Decline actions for orders
 router.post('/orders/:orderId/:action', async (req, res) => {
