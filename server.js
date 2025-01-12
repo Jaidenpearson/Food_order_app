@@ -34,12 +34,13 @@ app.use(cookieSession({
 
 const usersRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin')
-const checkoutRoutes = require('./routes/checkout');
+const checkoutRoutes = require('./routes/api/checkout');
 const dishesRoutes = require('./routes/api/dishes');
 const coursesRoutes = require('./routes/api/courses');
 const cartRoutes = require('./routes/api/cart');
 const smsRoutes = require('./routes/sms');
 const stripeRoutes = require('./routes/stripe');
+const confirmationRoutes = require('./routes/confirmation');
 
 // Mount all resource routes
 // Note: Feel free to replace the example routes below with your own
@@ -47,12 +48,13 @@ const stripeRoutes = require('./routes/stripe');
 
 app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes)
-app.use('/checkout', checkoutRoutes);
+app.use('/api/checkout', checkoutRoutes);
 app.use('/api/dishes', dishesRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/order-confirmation', confirmationRoutes);
 
 // Note: mount other resources here, using the same pattern above
 
@@ -63,6 +65,11 @@ app.use('/api/stripe', stripeRoutes);
 app.get('/', (req, res) => {
   res.render('index');
 });
+
+app.get('/checkout', (req, res) => {
+  res.render('checkout');
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);

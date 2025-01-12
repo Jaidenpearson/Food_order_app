@@ -28,6 +28,7 @@
         <th>Order ID</th>
         <th>Menu Item Name</th>
         <th>Total Price</th>
+        <th>Phone</th> <!-- New column for Phone -->
         <th>Status</th>
         <th>Actions</th>
         <th>SMS</th>
@@ -47,6 +48,7 @@
             <% } %>
           </td>
           <td>$<%= order.total_price ? parseFloat(order.total_price).toFixed(2) : '0.00' %></td>
+          <td><%= order.phone %></td> <!-- Display Phone -->
           <td><%= order.status %></td>
           <td>
             <% if (order.status === 'Pending') { %>
@@ -81,3 +83,4 @@
   </table>
 </body>
 </html>
+
