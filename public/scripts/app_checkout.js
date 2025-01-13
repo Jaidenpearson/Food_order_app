@@ -54,10 +54,6 @@ $(document).ready(function () {
       url: '/api/cart',
       method: 'GET',
       success: function (cart) {
-<<<<<<< HEAD
-        console.log(cart);
-=======
->>>>>>> feature/checkout_menu
         createOrder(cart);
         totalAmount(cart);
       },
