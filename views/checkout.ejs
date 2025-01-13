@@ -49,33 +49,20 @@
     </header>
 
     <div class="container mt-5">
-      <div class="row">
-        <!-- Order Summary -->
-        <div class="col-md-8">
-          <h2>Order Summary</h2>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Dish</th>
-                <th>Quantity</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody id="ordered-dish-container">
-              <!-- This is populated dynamically via JavaScript -->
-            </tbody>
-          </table>
-          <p>Total: <strong><span id="order-total">$50.00</span></strong></p> <!-- Ensure this ID is present -->
-        </div>
-
-        <!-- Payment Form -->
-        <div class="col-md-4">
-          <h2>Billing Details</h2>
-          <form id="checkout-form">
-            <!-- Full Name -->
-            <div class="mb-3">
-              <label for="fullName" class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="fullName" placeholder="John Doe" required />
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Order Summary</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Dish</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Remove item</th>
+                        </tr>
+                        <tbody id="ordered-dish-container"></tbody>
+                    </thead>
+                </table>
             </div>
 
             <!-- Email -->
