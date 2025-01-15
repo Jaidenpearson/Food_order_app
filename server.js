@@ -73,5 +73,5 @@ app.get('/checkout', (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+  console.log(`Sizzle & Spice listening on port ${PORT}`);
 });
