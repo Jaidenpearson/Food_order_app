@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
+    <meta name="description" content="Beacon Sushi - Delicious Sushi Delivered to You!" />
+    <meta name="author" content="Beacon Sushi Team" />
     <title>Beacon Sushi</title>
     <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
 
@@ -15,48 +15,89 @@
     <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Core theme CSS -->
-    <link href="../styles/styles.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap) -->
+    <link href="styles/styles.css" rel="stylesheet" />
   </head>
   <body id="page-top">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Navigation Sidebar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
       <a class="navbar-brand js-scroll-trigger" href="#page-top">
         <span class="d-block d-lg-none">Beacon Sushi</span>
-        <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="../public/images/profile.jpg" alt="..." /></span>
+        <span class="d-none d-lg-block">
+          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/profile.jpg" alt="Beacon Sushi Logo" />
+        </span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarResponsive"
+        aria-controls="navbarResponsive"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav">
-          <li class="nav-item" id="menu-toggle">
-            <a class="nav-link">Menu <i class="fa-solid fa-angle-down"></i><i class="fa-solid fa-angle-up"></i></a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#specials">Specials</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#salads">Salads</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#appetizers">Appetizers</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#mains">Mains</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#desserts">Desserts</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#drinks">Drinks</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#sides">Sides</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#gluten-free">Gluten Free</a>
-            <a class="nav-link sub-nav js-scroll-trigger" href="#vegetarian">Vegetarian</a>
-          </li>
-          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#">My Orders</a></li>
-          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#">About us</a></li>
-          <li class="nav-item"><a class="nav-link" href="/checkout"><i class="fa-solid fa-cart-shopping"></i></a></li>
+          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">About Us</a></li>
+          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#specials">Specials</a></li>
+          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#menu-container">Menu</a></li>
+          <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#orders">My Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="/checkout"><i class="fa-solid fa-cart-shopping"></i> Checkout</a></li>
         </ul>
       </div>
     </nav>
 
-    <!-- Menu -->
-    <div id="menu-container"></div>
+    <!-- Page Content -->
+    <div class="container-fluid p-0">
+      <!-- Specials Section -->
+      <section class="resume-section" id="about">
+        <div class="resume-section-content">
+          <h1 class="mb-0">
+            MoMo
+            <span class="text-primary">Restaurant</span>
+          </h1>
+          <p> MoMo Restaurant delivers the finest dining experience, straight to your home. 🥘 </p>
+        </div>
+      </section>
+      <hr class="m-0" />
+
+      <!-- About Us Section -->
+        <section class="resume-section" id="specials">
+          <div class="resume-section-content">
+            <h2 class="mb-5">Specials</h2>
+            <p>Enjoy our freshest creations and exclusive offers!</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Menu Section -->
+      <section class="resume-section" id="menu-container">
+        <div class="resume-section-content">
+          <h2 class="mb-5">Menu</h2>
+          <section class="menu-section">
+            <h2>Specials</h2>
+          </section>
+          <p>Explore our diverse sushi menu, crafted with care and love!</p>
+        </div>
+      </section>
+      <hr class="m-0" />
+
+      <!-- Orders Section -->
+      <section class="resume-section" id="orders">
+        <div class="resume-section-content">
+          <h2 class="mb-5">My Orders</h2>
+          <p>Track your current and past orders here.</p>
+        </div>
+      </section>
+      <hr class="m-0" />
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Core theme JS -->
+     <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/scripts/bootstrap.js"></script>
     <script src="../public/scripts/app.js"></script>
   </body>
