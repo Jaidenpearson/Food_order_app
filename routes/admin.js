@@ -29,7 +29,9 @@ const formatOrderDetailsForSMS = (order) => {
         })
         .join(', ');
 
-    const totalOrderPrice = order.total_price ? order.total_price.toFixed(2) : '0.00'; // Default total price
+    const totalOrderPrice = (Number(order.total_price) || 0).toFixed(2);
+
+    //const totalOrderPrice = order.total_price ? order.total_price.toFixed(2) : '0.00'; // Default total price
 
     return `Order ID: ${order.order_id}\nItems: ${itemsDescription}\nTotal: $${totalOrderPrice}`;
 };
@@ -104,76 +106,100 @@ router.get('/admin/dashboard', async (req, res) => {
 
 // Route to handle Accept/Decline actions for orders
 router.post('/orders/:orderId/:action', async (req, res) => {
-    const { orderId, action } = req.params;
-    const validActions = ['accept', 'decline', 'send-sms'];
+  const { orderId, action } = req.params;
+  const validActions = ['accept', 'decline', 'send-sms'];
 
-    if (!validActions.includes(action.toLowerCase())) {
-        return res.status(400).send('Invalid action');
-    }
+  // Validate action
+  if (!validActions.includes(action.toLowerCase())) {
+      return res.status(400).send('Invalid action');
+  }
 
-    try {
-        if (action === 'send-sms') {
-            const query = `
-            SELECT
-                Orders.UniqueID AS order_id,
-                JSON_AGG(
-                    JSON_BUILD_OBJECT(
-                        'menu_item_name', Dishes.Name,
-                        'quantity', Ordered_dishes.Quantity,
-                        'price', Dishes.Price
-                    )
-                ) AS dishes,
-                SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
-                Orders.Phone_Number AS phone,
-                Orders.sms_sent
-            FROM
-                Orders
-            LEFT JOIN
-                Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
-            LEFT JOIN
-                Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
-            WHERE
-                Orders.UniqueID = $1
-            GROUP BY
-                Orders.UniqueID;
-            `;
+  try {
+      if (action === 'send-sms') {
+          // Query to fetch order details
+          const query = `
+              SELECT
+                  Orders.UniqueID AS order_id,
+                  JSON_AGG(
+                      JSON_BUILD_OBJECT(
+                          'menu_item_name', Dishes.Name,
+                          'quantity', Ordered_dishes.Quantity,
+                          'price', Dishes.Price
+                      )
+                  ) AS dishes,
+                  SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
+                  Orders.Phone_Number AS phone,
+                  Orders.sms_sent
+              FROM
+                  Orders
+              LEFT JOIN
+                  Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
+              LEFT JOIN
+                  Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+              WHERE
+                  Orders.UniqueID = $1
+              GROUP BY
+                  Orders.UniqueID;
+          `;
 
-            const result = await pool.query(query, [orderId]);
-            const order = result.rows[0];
+          const result = await pool.query(query, [orderId]);
+          const order = result.rows[0];
 
-            if (!order) {
-                return res.status(404).send('Order not found.');
-            }
+          if (!order) {
+              return res.status(404).send('Order not found.');
+          }
 
-            if (order.sms_sent) {
-                return res.status(400).send('SMS already sent for this order.');
-            }
+          if (order.sms_sent) {
+              return res.status(400).send('SMS already sent for this order.');
+          }
 
-            const message = formatOrderDetailsForSMS(order);
+          const phone = order.phone || '+15879873950'; // Replace with a default testing number
 
-            try {
-                await twilioClient.messages.create({
-                    body: `Thank you for your order!\n${message}`,
-                    from: process.env.TWILIO_PHONE_NUMBER,
-                    to: order.phone,
-                });
-
-                await pool.query('UPDATE Orders SET sms_sent = TRUE WHERE UniqueID = $1', [orderId]);
-
-                res.redirect('/admin/dashboard');
-            } catch (err) {
-                console.error('Error sending SMS:', err);
-                res.status(500).send('Failed to send SMS.');
-            }
-        } else {
-            const status = action === 'accept' ? 'Accepted' : 'Declined';
-            await pool.query('UPDATE Orders SET Status = $1 WHERE UniqueID = $2', [status, orderId]);
-            res.redirect('/admin/dashboard');
+         // Validate phone number
+        if (!phone || typeof phone !== 'string' || !phone.trim().startsWith('+')) {
+            console.error(`Invalid phone number for Order ID ${orderId}:`, order.phone);
+            return res.status(400).send(`Cannot send SMS: Missing or invalid phone number for Order ID: ${orderId}`);
         }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error processing action.');
-    }
-});
 
+
+          // Format SMS message
+          const message = formatOrderDetailsForSMS(order);
+
+          try {
+              // Send SMS
+              console.log(`Sending SMS to ${order.phone} with message:\n${message}`);
+              await twilioClient.messages.create({
+                  body: `Thank you for your order!\n${message}`,
+                  from: process.env.TWILIO_PHONE_NUMBER,
+                  to: process.env.TO_NUMBER,
+              });
+
+              console.log('SMS sent successfully.');
+
+              // Update database
+              await pool.query('UPDATE Orders SET sms_sent = TRUE WHERE UniqueID = $1', [orderId]);
+
+              res.redirect('/admin/dashboard');
+          } catch (err) {
+              console.error('Error sending SMS:', err.message);
+              res.status(500).send('Failed to send SMS.');
+          }
+      } else {
+          // Handle accept/decline actions
+          const status = action === 'accept' ? 'Accepted' : 'Declined';
+
+          try {
+              await pool.query('UPDATE Orders SET Status = $1 WHERE UniqueID = $2', [status, orderId]);
+              console.log(`Order ${orderId} status updated to ${status}.`);
+              res.redirect('/admin/dashboard');
+          } catch (err) {
+              console.error('Error updating order status:', err.message);
+              res.status(500).send('Failed to update order status.');
+          }
+      }
+  } catch (err) {
+      console.error('Error processing action:', err.message);
+      res.status(500).send('Error processing action.');
+  }
+});
 module.exports = router;
