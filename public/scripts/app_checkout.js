@@ -1,11 +1,11 @@
 $(document).ready(function () {
   // Initialize Stripe with your public key
   const stripe = Stripe('pk_test_51QgBDKIdoKbS5vetlDORSLcQoMOl2In5LV82y0jJe77SDft60OXbEj6dgfBgwW3DztcZ61oVCeRi2gPIiPlime4100BXoHucEf'); // Replace with your actual Stripe public key
-  const elements = stripe.elements(); // Create an instance of Stripe Elements
-  const card = elements.create('card'); // Create a card element
-  card.mount('#card-element'); // Mount it to the `#card-element` div in your HTML
+  const elements = stripe.elements();
+  const card = elements.create('card');
+  card.mount('#card-element');
 
-  // Handle real-time validation errors from the card Element
+  // Handle real-time validation errors from the card element
   card.on('change', function (event) {
     const displayError = $('#card-errors');
     if (event.error) {
@@ -18,7 +18,7 @@ $(document).ready(function () {
 
   // Populate order summary table
   function createOrderHTML(order) {
-    const $row = $(`
+    return $(`
       <tr>
         <td>${order["dish-name"]}</td>
         <td>${order.quantity}</td>
@@ -26,28 +26,24 @@ $(document).ready(function () {
         <td><button class="btn btn-danger remove-item" data-name="${order["dish-name"]}">Remove</button></td>
       </tr>
     `);
-    return $('#ordered-dish-container').append($row);
   }
 
-  const createOrder = function (dishes) {
+  function createOrder(dishes) {
     dishes.forEach((dish) => {
       const $orderedDish = createOrderHTML(dish);
       $('#ordered-dish-container').append($orderedDish);
     });
-  };
+  }
 
-  const totalAmount = function (dishes) {
-    const orderTotal = dishes.reduce((total, dish) => {
-      return total + dish["dish-price"] * dish.quantity;
-    }, 0);
-    const $totalRow = $(`
+  function totalAmount(dishes) {
+    const orderTotal = dishes.reduce((total, dish) => total + dish["dish-price"] * dish.quantity, 0);
+    $('#ordered-dish-container').append(`
       <tr>
         <td colspan="2"><strong>Total</strong></td>
         <td id="order-total"><strong>$${orderTotal.toFixed(2)}</strong></td>
       </tr>
     `);
-    return $('#ordered-dish-container').append($totalRow);
-  };
+  }
 
   // Fetch cart data and render it on the checkout page
   const fetchCartData = () => {
@@ -70,12 +66,12 @@ $(document).ready(function () {
     const totalAmount = parseFloat($('#order-total').text().replace('$', ''));
     console.log('totalAmount:', totalAmount);
 
-    if (isNaN(totalAmount)) {
+    if (isNaN(totalAmount) || totalAmount <= 0) {
+      console.error('Invalid total amount:', totalAmountText);
       alert('Invalid total amount. Please check your order.');
       return;
     }
 
-    // Capture additional order details, including phone number
     const orderDetails = {
       amount: totalAmount,
       currency: 'usd',
@@ -95,12 +91,12 @@ $(document).ready(function () {
       url: '/api/checkout/create-payment-intent',
       method: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify(orderDetails), // Send phone number along with amount and currency
+      data: JSON.stringify(orderDetails),
       success: function (response) {
         stripe
           .confirmCardPayment(response.clientSecret, {
             payment_method: {
-              card: card, // Pass the card element here
+              card: card,
             },
           })
           .then((result) => {
@@ -109,7 +105,7 @@ $(document).ready(function () {
               alert('Payment failed. Please try again.');
             } else {
               alert('Payment successful!');
-              window.location.href = '/order-confirmation'; // Redirect to confirmation page
+              window.location.href = '/order-confirmation';
             }
           });
         },
@@ -122,6 +118,7 @@ $(document).ready(function () {
   )}
 );
 
+  // Handle item removal from the cart
   $(document).on('click', '.remove-item', function () {
     const dishName = $(this).data('name');
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
