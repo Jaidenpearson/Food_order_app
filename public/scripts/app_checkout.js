@@ -15,6 +15,7 @@ $(document).ready(function () {
     }
   });
 
+
   // Populate order summary table
   function createOrderHTML(order) {
     const $row = $(`
@@ -22,7 +23,7 @@ $(document).ready(function () {
         <td>${order["dish-name"]}</td>
         <td>${order.quantity}</td>
         <td>$${(order["dish-price"] * order.quantity).toFixed(2)}</td>
-        <td><button class="btn btn-danger remove-item" data-id="${order["dish-id"]}">Remove</button></td>
+        <td><button class="btn btn-danger remove-item" data-name="${order["dish-name"]}">Remove</button></td>
       </tr>
     `);
     return $('#ordered-dish-container').append($row);
@@ -42,7 +43,7 @@ $(document).ready(function () {
     const $totalRow = $(`
       <tr>
         <td colspan="2"><strong>Total</strong></td>
-        <td><strong>$${orderTotal.toFixed(2)}</strong></td>
+        <td id="order-total"><strong>$${orderTotal.toFixed(2)}</strong></td>
       </tr>
     `);
     return $('#ordered-dish-container').append($totalRow);
@@ -50,17 +51,9 @@ $(document).ready(function () {
 
   // Fetch cart data and render it on the checkout page
   const fetchCartData = () => {
-    $.ajax({
-      url: '/api/cart',
-      method: 'GET',
-      success: function (cart) {
-        createOrder(cart);
-        totalAmount(cart);
-      },
-      error: function (err) {
-        console.error('Error fetching cart data:', err);
-      },
-    });
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    createOrder(cart);
+    totalAmount(cart);
   };
 
   // Fetch cart data on page load
@@ -68,8 +61,14 @@ $(document).ready(function () {
 
   // Handle Stripe Checkout
   $('#place-order-btn').on('click', function () {
+    const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (storedCart.length === 0) {
+      alert('Your cart is empty.');
+      return;
+    }
     // Extract the total amount from the order summary
     const totalAmount = parseFloat($('#order-total').text().replace('$', ''));
+    console.log('totalAmount:', totalAmount);
 
     if (isNaN(totalAmount)) {
       alert('Invalid total amount. Please check your order.');
@@ -80,7 +79,9 @@ $(document).ready(function () {
     const orderDetails = {
       amount: totalAmount,
       currency: 'usd',
+      email: $('#email').val(), // Add email address here
       phone: $('#phone').val(), // Add phone number here
+      cart: localStorage.getItem('cart'),
     };
 
     // Validate the phone number
@@ -111,26 +112,26 @@ $(document).ready(function () {
               window.location.href = '/order-confirmation'; // Redirect to confirmation page
             }
           });
-      },
-      error: function (err) {
-        console.error('Error creating payment intent:', err);
-        alert('An error occurred while processing your payment. Please try again.');
-      },
-    });
-  });
+        },
+        error: function (err) {
+          console.error('Error creating payment intent:', err);
+          alert('An error occurred while processing your payment. Please try again.');
+        }
+      });
+    }
+  )}
+);
 
   $(document).on('click', '.remove-item', function () {
-    const id = $(this).data('id');
+    const dishName = $(this).data('name');
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart = cart.filter(dish => dish['dish-name'] !== dishName);
+    localStorage.setItem('cart', JSON.stringify(cart));
     $.ajax({
-      url: `/api/cart/${id}`,
-      method: 'DELETE',
-      success: function (response) {
-        $('#ordered-dish-container').empty(); // Clear the order summary table
-        fetchCartData(); // Refresh the cart data
-      },
-      error: function (err) {
-        console.error('Error removing item:', err);
+      url: '/checkout',
+      method: 'GET',
+      success: function () {
+        window.location.href = '/checkout';
       }
-    });
-  });
-});
+    })
+});;

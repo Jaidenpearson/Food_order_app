@@ -70,7 +70,7 @@ const createDishHTML = function(dish) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="add-to-cart-form" method="POST" action="/api/cart">
+            <form id="add-to-cart-form">
               <img class="dish-image" src="${dish.images}" alt="">
               <p>${dish.description}</p>
               <p>$${dish.price}</p>
@@ -130,12 +130,32 @@ $.ajax({
 
 $(document).on('submit', '#add-to-cart-form', function(event) {
   event.preventDefault();
-  $.post('/api/cart', $(this).serialize(), function(data) {
-  })
+
+  // Serialize form data
+  const formData = $(this).serializeArray();
+  console.log(formData);
+
+const dishData = {};
+  formData.forEach(item => {
+    dishData[item.name] = item.value;
+  });
+
+  // Retrieve existing cart data from localStorage
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  // Check if the dish is already in the cart
+  const existingDishIndex = cart.findIndex(dish => dish['dish-id'] === dishData['dish-id']);
+  if (existingDishIndex !== -1) {
+    // Update quantity if the dish is already in the cart
+    cart[existingDishIndex].quantity = parseInt(cart[existingDishIndex].quantity) + parseInt(dishData.quantity);
+  } else {
+    cart.push(dishData);
+  }
+
+  // Store updated cart data back in localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  console.log('cart', localStorage.getItem('cart'));
 });
 
 });
-
-// $(document).on('click', '.btn-outline-primary', function() {
-//   $modal.appendTo('body').modal('show');
-// });

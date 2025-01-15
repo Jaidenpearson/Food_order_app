@@ -40,32 +40,32 @@ $(document).ready(function () {
   // Fetch cart data on page load
   fetchCartData();
 
-  // Handle order submission
-  $('form').on('submit', function (event) {
-    event.preventDefault();
+  // // Handle order submission
+  // $('form').on('submit', function (event) {
+  //   event.preventDefault();
 
-    const orderDetails = {
-      fullName: $('#fullName').val(),
-      email: $('#email').val(),
-      phone: $('#phone').val(),
-      paymentMethod: $('#payment').val(),
-    };
+  //   const orderDetails = {
+  //     fullName: $('#fullName').val(),
+  //     email: $('#email').val(),
+  //     phone: $('#phone').val(),
+  //     paymentMethod: $('#payment').val(),
+  //   };
 
-    // Send order data to the server
-    $.ajax({
-      url: '/api/checkout',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(orderDetails),
-      success: function (response) {
-        alert('Order placed successfully!');
-        // Redirect to a confirmation page or clear the cart
-        window.location.href = '/order-confirmation';
-      },
-      error: function (err) {
-        console.error('Error placing order:', err);
-        alert('An error occurred while placing your order. Please try again.');
-      }
-    });
-  });
+  //   // Send order data to the server
+  //   $.ajax({
+  //     url: '/api/checkout',
+  //     method: 'POST',
+  //     contentType: 'application/json',
+  //     data: JSON.stringify(orderDetails),
+  //     success: function (response) {
+  //       alert('Order placed successfully!');
+  //       // Redirect to a confirmation page or clear the cart
+  //       window.location.href = '/order-confirmation';
+  //     },
+  //     error: function (err) {
+  //       console.error('Error placing order:', err);
+  //       alert('An error occurred while placing your order. Please try again.');
+  //     }
+  //   });
+  // });
 });
