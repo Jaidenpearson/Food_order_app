@@ -147,6 +147,7 @@ router.post('/orders/:orderId/:action', async (req, res) => {
 
           const result = await pool.query(query, [orderId]);
           const order = result.rows[0];
+          console.log(order)
 
           if (!order) {
               return res.status(404).send('Order not found.');
@@ -156,7 +157,9 @@ router.post('/orders/:orderId/:action', async (req, res) => {
               return res.status(400).send('SMS already sent for this order.');
           }
 
-          const phone = order.phone || '+15879873950'; // Replace with a default testing number
+          const phone = order.phone; // Replace with a default testing number
+
+          console.log('phone:', phone);
 
          // Validate phone number
         if (!phone || typeof phone !== 'string' || !phone.trim().startsWith('+')) {
@@ -174,7 +177,7 @@ router.post('/orders/:orderId/:action', async (req, res) => {
               await twilioClient.messages.create({
                   body: `Thank you for your order!\n${message}`,
                   from: process.env.TWILIO_PHONE_NUMBER,
-                  to: process.env.TO_NUMBER,
+                  to: phone,
               });
 
               console.log('SMS sent successfully.');
