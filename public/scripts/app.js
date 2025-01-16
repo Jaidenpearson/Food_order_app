@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  $('.sub-nav').hide();
 //Nav bar menu toggle
 $('#menu-toggle').on('click', function() {
   $('.sub-nav').toggle(300)
@@ -70,8 +71,8 @@ const createDishHTML = function(dish) {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="add-to-cart-form">
-              <img class="dish-image" src="${dish.images}" alt="">
+            <form id="add-to-cart-form" method="POST" action="/api/cart">
+              <img class="dish-image img-thumbnail img-fluid mx-auto" src="${dish.images}" alt="">
               <p>${dish.description}</p>
               <p>$${dish.price}</p>
                 <input type="hidden" name="dish-id" value="${dish.uniqueid}">
@@ -81,7 +82,6 @@ const createDishHTML = function(dish) {
                 <label for="quantity-${dish.id}">Quantity:</label>
                 <input type="number" id="quantity-${dish.id}" name="quantity" min="1" max="10" value="1">
               </div>
-              <textarea class="form-control" id="textArea-${dish.id}" rows="3" name="special-requests" placeholder="Special Instructions"></textarea>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button id="add-to-cart-${dish.id}" type="submit" class="btn btn-primary">Add to cart</button>
@@ -94,6 +94,16 @@ const createDishHTML = function(dish) {
   `);
   return $dish;
 };
+
+$(document).on('submit', 'form[id^="add-to-cart-form"]', function(event) {
+  event.preventDefault();
+  const modalId = $(this).closest('.modal').attr('id');
+  console.log('modalId', modalId);
+  $(`#${modalId}`).modal('hide');
+
+  // Optional: You can add an AJAX request here to send form data to the server if needed
+});
+
 
 //Appends dishes to the proper course
 const createDishes = function(dishes) {
