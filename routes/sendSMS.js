@@ -29,10 +29,12 @@ const sendSMS = (to, body) => {
       .catch(error => console.error('Error sending SMS:', error)); // Log errors
 };
 
+module.exports = sendSMS;
+
 
 // Test the function by calling it
 //sendSMS('+17782142310', 'Your Orders is Accepted and Ready!'); // Replace with your test phone number
-sendSMS('+15879873950', 'Your Orders is Accepted and Ready!'); // Replace with your test phone number
+sendSMS('+17782142310', 'Your Orders is Accepted and Ready!'); // Replace with your test phone number
 
 
 

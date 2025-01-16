@@ -13,6 +13,7 @@ router.post('/create-payment-intent', async (req, res) => {
   try {
 
     const { amount, phone, cart, email } = req.body;
+    console.log('req.body', req.body)
     if (!amount || !phone) {
       console.error('Missing required fields: amount or phone');
       return res.status(400).json({ error: 'Amount and phone number are required' });
@@ -26,29 +27,29 @@ router.post('/create-payment-intent', async (req, res) => {
 
     console.log('Payment Intent created successfully:', paymentIntent);
 
+    const correctedPhone = '+1' + phone
+
     const insertClient = await db.query(
       `
       INSERT INTO Client (name, Phone_number)
       VALUES ($1, $2) RETURNING UniqueID;
       `,
-      [email, phone]
+      [email, correctedPhone]
     )
     console.log('Client inserted successfully:', insertClient.rows[0]);
 
     const clientId = insertClient.rows[0].uniqueid;
 
     // Debug log for database insertion
-    console.log('Inserting order into database with phone:', phone);
+    console.log('Inserting order into database with phone:', correctedPhone);
 
     const insertOrder = await db.query(
       `
-      INSERT INTO Orders (Client_id, Status, Pickup_time, Created_at, Updated_at)
-      VALUES ($1, 'Pending', NOW() + INTERVAL '30 minutes', NOW()::timestamp, NOW()::timestamp) RETURNING UniqueID;
+      INSERT INTO Orders (Client_id, Status, Pickup_time, Created_at, Updated_at, phone_number)
+      VALUES ($1, 'Pending', NOW() + INTERVAL '30 minutes', NOW()::timestamp, NOW()::timestamp, $2) RETURNING UniqueID;
       `,
-      [clientId] // Replace `1` with actual Client ID logic
+      [clientId, correctedPhone] // Replace `1` with actual Client ID logic
     );
-
-    console.log('Order inserted successfully:', insertOrder.rows[0]);
 
     const orderId = insertOrder.rows[0].uniqueid;
 
