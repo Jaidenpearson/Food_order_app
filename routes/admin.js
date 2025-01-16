@@ -40,29 +40,30 @@ const formatOrderDetailsForSMS = (order) => {
 router.get('/dashboard', async (req, res) => {
     try {
         const query = `
-        SELECT
-            Orders.UniqueID AS order_id,
-            JSON_AGG(
-                JSON_BUILD_OBJECT(
-                    'menu_item_name', Dishes.Name,
-                    'quantity', Ordered_dishes.Quantity,
-                    'price', Dishes.Price,
-                    'total_price', (Ordered_dishes.Quantity * Dishes.Price)
-                )
-            ) AS dishes,
-            SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
-            Orders.Status AS status,
-            Orders.Phone_Number AS phone -- Include phone number
-        FROM
-            Orders
-        LEFT JOIN
-            Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
-        LEFT JOIN
-            Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
-        GROUP BY
-            Orders.UniqueID
-        ORDER BY
-            Orders.Created_at DESC;
+          SELECT
+              Orders.UniqueID AS order_id,
+              Orders.Client_id,
+              Orders.Created_at,
+              JSON_AGG(
+                  JSON_BUILD_OBJECT(
+                      'menu_item_name', Dishes.Name,
+                      'quantity', Ordered_dishes.Quantity,
+                      'price', Dishes.Price,
+                      'total_price', (Ordered_dishes.Quantity * Dishes.Price)
+                  )
+              ) AS dishes,
+              SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
+              Orders.Status AS status
+          FROM
+              Orders
+          LEFT JOIN
+              Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
+          LEFT JOIN
+              Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+          GROUP BY
+              Orders.UniqueID, Orders.Client_id, Orders.Created_at
+          ORDER BY
+              Orders.Created_at DESC;
         `;
         const result = await pool.query(query);
         const orders = result.rows;
