@@ -157,8 +157,5 @@ const dishData = {};
 
   console.log('cart', localStorage.getItem('cart'));
 });
-<<<<<<< HEAD
-=======
 
 });
->>>>>>> development

@@ -12447,6 +12447,8 @@ section.resume-section .resume-section-content {
   align-items: flex-start;
 }
 
+
+
 @media (min-width: 768px) {
   section.resume-section {
     min-height: 100vh;
