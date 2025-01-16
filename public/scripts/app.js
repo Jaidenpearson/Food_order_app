@@ -95,6 +95,16 @@ const createDishHTML = function(dish) {
   return $dish;
 };
 
+$(document).on('submit', 'form[id^="add-to-cart-form"]', function(event) {
+  event.preventDefault();
+  const modalId = $(this).closest('.modal').attr('id');
+  console.log('modalId', modalId);
+  $(`#${modalId}`).modal('hide');
+
+  // Optional: You can add an AJAX request here to send form data to the server if needed
+});
+
+
 //Appends dishes to the proper course
 const createDishes = function(dishes) {
   dishes.forEach(dish => {
