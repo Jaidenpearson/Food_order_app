@@ -130,8 +130,35 @@ $.ajax({
 
 $(document).on('submit', '#add-to-cart-form', function(event) {
   event.preventDefault();
-  $.post('/api/cart', $(this).serialize(), function(data) {
-  })
+
+  // Serialize form data
+  const formData = $(this).serializeArray();
+  console.log(formData);
+
+const dishData = {};
+  formData.forEach(item => {
+    dishData[item.name] = item.value;
+  });
+
+  // Retrieve existing cart data from localStorage
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  // Check if the dish is already in the cart
+  const existingDishIndex = cart.findIndex(dish => dish['dish-id'] === dishData['dish-id']);
+  if (existingDishIndex !== -1) {
+    // Update quantity if the dish is already in the cart
+    cart[existingDishIndex].quantity = parseInt(cart[existingDishIndex].quantity) + parseInt(dishData.quantity);
+  } else {
+    cart.push(dishData);
+  }
+
+  // Store updated cart data back in localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  console.log('cart', localStorage.getItem('cart'));
 });
+<<<<<<< HEAD
+=======
 
 });
+>>>>>>> development

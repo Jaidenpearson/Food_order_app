@@ -9,6 +9,9 @@ const twilioClient = twilio(
   process.env.TWILIO_AUTH_TOKEN
 );
 
+
+
+
 // Route to handle sending SMS
 router.post('/orders/:orderId/send-sms', async (req, res) => {
   const { orderId } = req.params;
@@ -56,7 +59,7 @@ router.post('/orders/:orderId/send-sms', async (req, res) => {
         2
       )}. Thank you for your order!`,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: order.customer_phone,
+      to: process.env.TO_NUMBER,
     });
 
     console.log(`SMS sent: ${message.sid}`);
