@@ -42,8 +42,6 @@ router.get('/dashboard', async (req, res) => {
         const query = `
           SELECT
               Orders.UniqueID AS order_id,
-              Orders.Client_id,
-              Orders.Created_at,
               JSON_AGG(
                   JSON_BUILD_OBJECT(
                       'menu_item_name', Dishes.Name,
@@ -53,15 +51,19 @@ router.get('/dashboard', async (req, res) => {
                   )
               ) AS dishes,
               SUM(Ordered_dishes.Quantity * Dishes.Price) AS total_price,
-              Orders.Status AS status
+              Orders.Status AS status,
+              Client.Phone_Number AS phone,
+              Orders.Created_at
           FROM
               Orders
           LEFT JOIN
               Ordered_dishes ON Orders.UniqueID = Ordered_dishes.Order_id
           LEFT JOIN
               Dishes ON Ordered_dishes.Dish_id = Dishes.UniqueID
+          LEFT JOIN
+              Client ON Orders.Client_id = Client.UniqueID
           GROUP BY
-              Orders.UniqueID, Orders.Client_id, Orders.Created_at
+              Orders.UniqueID, Client.Phone_Number, Orders.Created_at
           ORDER BY
               Orders.Created_at DESC;
         `;
